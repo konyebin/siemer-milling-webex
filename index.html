@@ -446,8 +446,7 @@
   }
 
   .ai-tier.included { border-color: rgba(108,194,74,0.25); }
-  .ai-tier.addon { border-color: rgba(255,181,73,0.25); }
-  .ai-tier.premium { border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.04); }
+  .ai-tier.addon { border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.04); }
 
   .ai-tier-header {
     display: flex;
@@ -482,8 +481,7 @@
   }
 
   .tier-badge.included { background: rgba(108,194,74,0.18); color: var(--green); }
-  .tier-badge.addon { background: rgba(255,181,73,0.18); color: var(--orange); }
-  .tier-badge.premium { background: rgba(124,58,237,0.22); color: #c4b5fd; }
+  .tier-badge.addon { background: rgba(124,58,237,0.22); color: #c4b5fd; }
 
   .ai-tier-cards { display: flex; flex-direction: column; gap: 24px; }
 
@@ -506,7 +504,8 @@
   .ai-card:hover { border-color: rgba(0,188,235,0.35); }
   .ai-tier .ai-card:nth-child(even) { direction: rtl; }
   .ai-tier .ai-card:nth-child(even) > * { direction: ltr; }
-  .ai-tier.premium .ai-card { margin-bottom: 0; }
+  .ai-tier.addon .ai-card { margin-bottom: 0; }
+  .ai-tier.addon .ai-card:last-child { margin-bottom: 0; }
 
   .ai-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 
@@ -774,7 +773,7 @@
         <div class="section-label green">Calling AI</div>
         <h2 class="section-title">Webex Calling AI Enhancements</h2>
       </div>
-      <p class="section-desc">Intelligent features grouped by license — what's included today, what requires an add-on, and what's coming in Q4FY26.</p>
+      <p class="section-desc">Intelligent features grouped by license — what's included with Calling Professional and what requires the AI Premium add-on.</p>
     </div>
 
     <div class="ai-tier included reveal">
@@ -811,8 +810,8 @@
       <div class="ai-tier-header">
         <div>
           <span class="tier-badge addon">Add-On</span>
-          <h3>Premium AI Add-On</h3>
-          <p>Advanced AI assistant capabilities for call prep and contextual intelligence across conversations.</p>
+          <h3>AI Premium</h3>
+          <p>Advanced AI capabilities — call prep, transfer summaries, and caller intent — available now and expanding in Q4FY26.</p>
         </div>
       </div>
       <div class="ai-tier-cards">
@@ -833,18 +832,7 @@
             <img src="assets/ai/ask-anything.png" alt="Ask me anything — AI assistant prep">
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="ai-tier premium reveal">
-      <div class="ai-tier-header">
-        <div>
-          <span class="tier-badge premium">Add-On</span>
-          <h3>AI Premium</h3>
-          <p>Premium AI features that require the AI Premium license — available now and expanding in Q4FY26.</p>
-        </div>
-      </div>
-      <div class="ai-tier-cards">
         <div class="ai-card reveal">
           <div class="ai-text">
             <div class="ai-badges">
