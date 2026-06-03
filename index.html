@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siemer Milling — Webex Calling Journey</title>
+<style>
+  :root {
+    --navy: #001e3c;
+    --navy-light: #002d5c;
+    --cyan: #00bceb;
+    --orange: #ffb549;
+    --green: #6cc24a;
+    --white: #ffffff;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(255,255,255,0.04);
+    --border: rgba(0,188,235,0.2);
+    --progress: 0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  .container {
+    width: min(1600px, calc(100% - 48px));
+    max-width: none;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: end;
+    margin-bottom: 48px;
+  }
+
+  .section-header .section-desc { margin-bottom: 0; max-width: none; }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,188,235,0.12) 0%, transparent 60%),
+                linear-gradient(180deg, var(--navy) 0%, var(--navy-light) 100%);
+    padding: 80px 24px;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  }
+
+  .hero-logo { height: 72px; margin-bottom: 32px; filter: brightness(1.1); }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border: 1px solid var(--cyan);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span { color: var(--cyan); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--text-muted);
+    max-width: 640px;
+    margin-bottom: 12px;
+  }
+
+  .hero-note {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 560px;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-hint svg { width: 24px; height: 24px; stroke: var(--cyan); }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  .section { padding: 100px 0; position: relative; }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-label.cyan { color: var(--cyan); }
+  .section-label.orange { color: var(--orange); }
+  .section-label.green { color: var(--green); }
+
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: none;
+    margin-bottom: 48px;
+  }
+
+  .timeline-section { background: linear-gradient(180deg, var(--navy-light) 0%, var(--navy) 100%); }
+
+  .timeline-rail-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(0,30,60,0.95);
+    backdrop-filter: blur(8px);
+    padding: 16px 0;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .timeline-rail {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timeline-rail-fill {
+    height: 100%;
+    width: calc(var(--progress) * 100%);
+    background: linear-gradient(90deg, var(--cyan), var(--orange));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .phase-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .phase-labels span:first-child { color: var(--cyan); }
+  .phase-labels span:last-child { color: var(--orange); text-align: right; }
+
+  .timeline-steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px;
+    position: relative;
+    padding-top: 24px;
+  }
+
+  .timeline-steps::before {
+    content: '';
+    position: absolute;
+    top: 36px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    z-index: 0;
+  }
+
+  .timeline-step {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 12px 24px;
+    opacity: 0.35;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    align-items: center;
+  }
+
+  .timeline-step.visible { opacity: 1; transform: translateY(0); }
+  .timeline-step.active { opacity: 1; }
+
+  .timeline-step::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+    order: -1;
+  }
+
+  .timeline-step.visible::before,
+  .timeline-step.active::before {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px rgba(0,188,235,0.5);
+  }
+
+  .timeline-step.phase-move.visible::before,
+  .timeline-step.phase-move.active::before {
+    background: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 16px rgba(255,181,73,0.5);
+  }
+
+  .step-number {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    opacity: 0.2;
+    transition: opacity 0.4s ease, color 0.4s ease;
+  }
+
+  .timeline-step.visible .step-number,
+  .timeline-step.active .step-number { opacity: 0.55; color: var(--cyan); }
+  .timeline-step.phase-move.visible .step-number,
+  .timeline-step.phase-move.active .step-number { color: var(--orange); }
+
+  .step-icon { width: 44px; height: 44px; margin: 0 auto 8px; opacity: 0.85; }
+
+  .step-content { width: 100%; }
+  .step-content h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+  .step-content p { color: var(--text-muted); font-size: 0.92rem; max-width: none; }
+
+  .step-phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  .step-phase-tag.connect { background: rgba(0,188,235,0.15); color: var(--cyan); }
+  .step-phase-tag.move { background: rgba(255,181,73,0.15); color: var(--orange); }
+
+  .phases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .phase-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+  }
+
+  .phase-card.visible { opacity: 1; transform: translateY(0); }
+  .phase-card:hover { border-color: rgba(0,188,235,0.4); }
+
+  .phase-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid;
+  }
+
+  .phase-card.pre h3 { border-color: var(--cyan); color: var(--cyan); }
+  .phase-card.prep h3 { border-color: #4da6ff; color: #4da6ff; }
+  .phase-card.migrate h3 { border-color: var(--green); color: var(--green); }
+
+  .phase-card ul { list-style: none; }
+
+  .phase-card li {
+    padding: 8px 0;
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.85);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phase-card li:last-child { border-bottom: none; }
+
+  .phase-card li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .phase-card.pre li::before { background: var(--cyan); }
+  .phase-card.prep li::before { background: #4da6ff; }
+  .phase-card.migrate li::before { background: var(--green); }
+
+  .tools-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .tool-callout {
+    background: rgba(0,188,235,0.06);
+    border: 1px solid rgba(0,188,235,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .tool-callout.visible { opacity: 1; transform: translateY(0); }
+
+  .tool-callout h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tool-callout p { font-size: 0.9rem; color: var(--text-muted); }
+
+  .value-section { background: var(--navy-light); }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .value-item {
+    background: rgba(108,194,74,0.06);
+    border: 1px solid rgba(108,194,74,0.15);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s;
+  }
+
+  .value-item.visible { opacity: 1; transform: scale(1); }
+  .value-item:hover { border-color: rgba(108,194,74,0.4); }
+
+  .value-icon { width: 40px; height: 40px; margin: 0 auto 12px; color: var(--green); }
+  .value-item h4 { font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
+
+  .pivot {
+    text-align: center;
+    padding: 80px 24px;
+    background: linear-gradient(180deg, var(--navy-light) 0%, var(--navy) 50%, #001528 100%);
+    position: relative;
+  }
+
+  .pivot::before, .pivot::after {
+    content: '';
+    position: absolute;
+    left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+  }
+
+  .pivot::before { top: 0; }
+  .pivot::after { bottom: 0; }
+
+  .pivot h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .pivot h2 span { color: var(--green); }
+  .pivot p { color: var(--text-muted); font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+
+  .ai-section { background: #001528; padding-bottom: 80px; }
+
+  .ai-tier {
+    margin-bottom: 56px;
+    padding: 36px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .ai-tier.included { border-color: rgba(108,194,74,0.25); }
+  .ai-tier.addon { border-color: rgba(255,181,73,0.25); }
+  .ai-tier.premium { border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.04); }
+
+  .ai-tier-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .ai-tier-header h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-weight: 700;
+  }
+
+  .ai-tier-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 720px;
+  }
+
+  .tier-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .tier-badge.included { background: rgba(108,194,74,0.18); color: var(--green); }
+  .tier-badge.addon { background: rgba(255,181,73,0.18); color: var(--orange); }
+  .tier-badge.premium { background: rgba(124,58,237,0.22); color: #c4b5fd; }
+
+  .ai-tier-cards { display: flex; flex-direction: column; gap: 24px; }
+
+  .ai-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 32px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+  }
+
+  .ai-card.visible { opacity: 1; transform: translateY(0); }
+  .ai-card:hover { border-color: rgba(0,188,235,0.35); }
+  .ai-tier .ai-card:nth-child(even) { direction: rtl; }
+  .ai-tier .ai-card:nth-child(even) > * { direction: ltr; }
+  .ai-tier.premium .ai-card { margin-bottom: 0; }
+
+  .ai-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 12px;
+  }
+
+  .badge.delivered { background: rgba(108,194,74,0.2); color: var(--green); }
+  .badge.limited { background: rgba(255,181,73,0.2); color: var(--orange); }
+  .badge.upcoming { background: rgba(0,188,235,0.2); color: var(--cyan); }
+  .badge.license { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+
+  .ai-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+  .ai-card .tagline { font-size: 1rem; color: var(--cyan); font-weight: 600; margin-bottom: 16px; }
+  .ai-card ul { list-style: none; margin-bottom: 16px; }
+
+  .ai-card li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .ai-card li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--cyan);
+  }
+
+  .ai-visual { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .ai-visual img { width: 100%; height: auto; display: block; }
+  .ai-visual.multi { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ai-visual.multi img:first-child { grid-column: 1 / -1; }
+
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .footer-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 16px;
+  }
+
+  .footer-logos img { height: 36px; opacity: 0.8; }
+
+  @media (max-width: 1100px) {
+    .timeline-steps {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding-top: 0;
+    }
+    .timeline-steps::before { display: none; }
+    .timeline-step {
+      text-align: left;
+      align-items: flex-start;
+      border-left: 2px solid rgba(255,255,255,0.08);
+      margin-left: 8px;
+      padding: 32px 0 32px 28px;
+    }
+    .timeline-step::before { position: absolute; left: -9px; top: 40px; }
+    .step-icon { margin: 0 0 8px; }
+    .section-header { grid-template-columns: 1fr; gap: 16px; }
+  }
+
+  @media (max-width: 900px) {
+    .phases-grid, .value-grid { grid-template-columns: 1fr; }
+    .tools-row { grid-template-columns: 1fr; }
+    .ai-card { grid-template-columns: 1fr; }
+    .ai-tier .ai-card:nth-child(even) { direction: ltr; }
+    .ai-tier { padding: 24px 20px; }
+  }
+
+  @media (max-width: 600px) {
+    .section { padding: 60px 0; }
+    .timeline-rail-wrap { position: relative; }
+    .ai-card { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <img src="assets/siemer-logo.png" alt="Siemer Milling Company" class="hero-logo">
+  <div class="hero-badge">Webex Calling</div>
+  <h1>Your <span>Migration Journey</span></h1>
+  <p class="hero-sub">Siemer Milling Company — family and employee-owned flour milling since 1882</p>
+  <p class="hero-note">With discovery complete, here's the path forward — from cloud readiness to AI-powered calling.</p>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<section class="section timeline-section" id="timeline">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label cyan">Migration Overview</div>
+        <h2 class="section-title">The Migration Journey: 5 Steps to Success</h2>
+      </div>
+      <p class="section-desc">A proven, phased approach to move Siemer Milling from on-premises telephony to Webex Calling — at your pace, with minimal disruption.</p>
+    </div>
+
+    <div class="timeline-rail-wrap">
+      <div class="timeline-rail">
+        <div class="timeline-rail-fill" id="railFill"></div>
+      </div>
+      <div class="phase-labels">
+        <span>Connect to Cloud</span>
+        <span>Move at Your Pace</span>
+      </div>
+    </div>
+
+    <div class="timeline-steps" id="timelineSteps">
+      <div class="timeline-step" data-step="1">
+        <div class="step-number">01</div>
+        <div class="step-content">
+          <span class="step-phase-tag connect">Connect to Cloud</span>
+          <svg class="step-icon" viewBox="0 0 48 48" fill="none" stroke="#00bceb" stroke-width="2"><circle cx="20" cy="20" r="12"/><line x1="28" y1="28" x2="38" y2="38"/><circle cx="36" cy="12" r="4" fill="#00bceb" stroke="none"/><circle cx="12" cy="32" r="3" fill="#00bceb" stroke="none"/></svg>
+          <h3>Gain Insights &amp; Cloud Readiness</h3>
+          <p>Understand your user base and identify cloud readiness using Cloud Connected UC analytics — know exactly who is ready to move and who needs preparation.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step" data-step="2">
+        <div class="step-number">02</div>
+        <div class="step-content">
+          <span class="step-phase-tag connect">Connect to Cloud</span>
+          <svg class="step-icon" viewBox="0 0 48 48" fill="none" stroke="#00bceb" stroke-width="2"><rect x="4" y="10" width="28" height="20" rx="2"/><rect x="16" y="28" width="28" height="16" rx="2"/><rect x="30" y="6" width="12" height="20" rx="2"/></svg>
+          <h3>Modernize the User Experience</h3>
+          <p>Deploy the Webex app across desktops and mobile devices — or integrate calling into the apps your teams already use every day.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step phase-move" data-step="3">
+        <div class="step-number">03</div>
+        <div class="step-content">
+          <span class="step-phase-tag move">Move at Your Pace</span>
+          <svg class="step-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb549" stroke-width="2"><rect x="8" y="6" width="24" height="32" rx="2"/><line x1="14" y1="14" x2="26" y2="14"/><line x1="14" y1="20" x2="26" y2="20"/><line x1="14" y1="26" x2="20" y2="26"/><polyline points="34,18 40,24 34,30" stroke="#ffb549"/></svg>
+          <h3>Subscribe to Webex Calling &amp; Plan</h3>
+          <p>Activate Webex Calling licenses and build a detailed migration plan — wave assignments, number porting, and device mapping for all three mill sites.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step phase-move" data-step="4">
+        <div class="step-number">04</div>
+        <div class="step-content">
+          <span class="step-phase-tag move">Move at Your Pace</span>
+          <svg class="step-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb549" stroke-width="2"><path d="M24 8v16"/><polyline points="18,18 24,24 30,18"/><path d="M8 32c0-8 7-12 16-12s16 4 16 12" stroke-dasharray="4 2"/></svg>
+          <h3>Start Moving Cloud-Ready Users</h3>
+          <p>Begin migrating cloud-ready users and devices using built-in migration tools — bulk provisioning, number porting, and automated device onboarding.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step phase-move" data-step="5">
+        <div class="step-number">05</div>
+        <div class="step-content">
+          <span class="step-phase-tag move">Move at Your Pace</span>
+          <svg class="step-icon" viewBox="0 0 48 48" fill="none" stroke="#ffb549" stroke-width="2"><path d="M6 36 Q16 12, 24 24 T42 12"/><circle cx="42" cy="12" r="4" fill="#ffb549" stroke="none"/><line x1="38" y1="8" x2="44" y2="8" stroke="#001e3c" stroke-width="2"/><line x1="41" y1="5" x2="41" y2="11" stroke="#001e3c" stroke-width="2"/></svg>
+          <h3>Migrate Remaining Users at Your Pace</h3>
+          <p>Complete the transition on your timeline — no forced cutover. Remaining users and complex configurations move when the business is ready.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="phases">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label cyan">Multi-Phase Approach</div>
+        <h2 class="section-title">Webex Calling Migration Journey</h2>
+      </div>
+      <p class="section-desc">Three structured phases with purpose-built tools at every stage.</p>
+    </div>
+
+    <div class="phases-grid">
+      <div class="phase-card pre reveal">
+        <h3>Pre-Migration</h3>
+        <ul>
+          <li>Webex Org Setup</li>
+          <li>Analytics Deployment</li>
+          <li>Webex Control Hub Setup</li>
+          <li>Network &amp; Security Readiness</li>
+          <li>Applications Readiness (CUCM, Expressway &amp; CUC)</li>
+        </ul>
+      </div>
+      <div class="phase-card prep reveal">
+        <h3>Migration Prep</h3>
+        <ul>
+          <li>Discover &amp; Design</li>
+          <li>Deploy &amp; Configure (CUCM, Expressway &amp; CUC)</li>
+          <li>Plan &amp; Prep</li>
+        </ul>
+      </div>
+      <div class="phase-card migrate reveal">
+        <h3>Migrate</h3>
+        <ul>
+          <li>Migrate users, devices &amp; numbers</li>
+          <li>Decommission legacy systems</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tools-row">
+      <div class="tool-callout reveal">
+        <h4>Public APIs</h4>
+        <p>Set of public REST APIs to provision Webex Calling with continuous enhancements.</p>
+      </div>
+      <div class="tool-callout reveal">
+        <h4>Basic Migration Tools</h4>
+        <p>Bulk provisioning &amp; stand-alone task-based tools via Control Hub.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section value-section" id="value">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label green">Then Keep Adding Value</div>
+        <h2 class="section-title">Beyond Migration: Continuous Innovation</h2>
+      </div>
+      <p class="section-desc">Once on Webex Calling, unlock a platform that keeps delivering — from mobility to sustainability to AI.</p>
+    </div>
+
+    <div class="value-grid">
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="12" y="4" width="16" height="28" rx="3"/><line x1="16" y1="28" x2="24" y2="28"/></svg><h4>WebexGo for ultimate mobile experience</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 32V16"/><path d="M12 24c4-8 12-8 16 0"/></svg><h4>Growth-ready without friction</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="14" width="12" height="18" rx="1"/><rect x="22" y="14" width="12" height="18" rx="1"/><path d="M12 8v6M28 8v6"/></svg><h4>Cloud managed local survivability</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 8c-6 0-10 4-10 8s4 8 10 8 10-4 10-8-4-8-10-8z"/><path d="M10 24c2 4 6 6 10 6s8-2 10-6"/></svg><h4>Sustainability</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><circle cx="20" cy="12" r="6"/><path d="M8 32c0-6 5-10 12-10s12 4 12 10"/></svg><h4>PSTN consolidation</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="32" height="20" rx="2"/><line x1="14" y1="32" x2="26" y2="32"/><line x1="20" y1="28" x2="20" y2="32"/></svg><h4>Workloads consolidation</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="24" height="16" rx="2"/><circle cx="20" cy="16" r="4"/></svg><h4>Continued innovation with Cloud integrations</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="10" width="28" height="18" rx="2"/><circle cx="20" cy="19" r="5"/></svg><h4>Modern devices</h4></div>
+      <div class="value-item reveal"><svg class="value-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><circle cx="20" cy="20" r="12"/><path d="M14 20h12M20 14v12"/></svg><h4>Operational efficiency with Webex APIs</h4></div>
+    </div>
+  </div>
+</section>
+
+<section class="pivot">
+  <h2>Migration is the foundation.<br><span>AI is what comes next.</span></h2>
+  <p>Webex Calling AI transforms every conversation — from automatic summaries to caller intent and intelligent call prep.</p>
+</section>
+
+<section class="section ai-section" id="ai">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label green">Calling AI</div>
+        <h2 class="section-title">Webex Calling AI Enhancements</h2>
+      </div>
+      <p class="section-desc">Intelligent features grouped by license — what's included today, what requires an add-on, and what's coming in Q4FY26.</p>
+    </div>
+
+    <div class="ai-tier included reveal">
+      <div class="ai-tier-header">
+        <div>
+          <span class="tier-badge included">Included</span>
+          <h3>Webex Calling Professional</h3>
+          <p>Core AI capabilities included with your Calling Professional license — no add-on required.</p>
+        </div>
+      </div>
+      <div class="ai-tier-cards">
+        <div class="ai-card reveal">
+          <div class="ai-text">
+            <div class="ai-badges">
+              <span class="badge delivered">Delivered</span>
+            </div>
+            <h3>Automatic Summaries &amp; Action Items</h3>
+            <p class="tagline">Effortless productivity — focus on what matters: the customer</p>
+            <ul>
+              <li>Summarize calls and capture action items in real time during the conversation</li>
+              <li>Access call summary, transcript, and action items in Call History after the call</li>
+              <li>Supported in 16 spoken languages including English, Spanish, German, and French</li>
+            </ul>
+          </div>
+          <div class="ai-visual multi">
+            <img src="assets/ai/auto-summaries-1.png" alt="Automatic call summaries">
+            <img src="assets/ai/auto-summaries-2.png" alt="Call history with transcript">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-tier addon reveal">
+      <div class="ai-tier-header">
+        <div>
+          <span class="tier-badge addon">Add-On</span>
+          <h3>Premium AI Add-On</h3>
+          <p>Advanced AI assistant capabilities for call prep and contextual intelligence across conversations.</p>
+        </div>
+      </div>
+      <div class="ai-tier-cards">
+        <div class="ai-card reveal">
+          <div class="ai-text">
+            <div class="ai-badges">
+              <span class="badge delivered">Delivered</span>
+            </div>
+            <h3>Ask Me Anything — Prep Me for My Next Call</h3>
+            <p class="tagline">Build stronger relationships and improve call outcomes</p>
+            <ul>
+              <li>Surfaces previous interactions — calls, messages, and meetings — so you pick up where you left off</li>
+              <li>Integrates with Amazon Q, Microsoft Copilot, and other 3rd party apps</li>
+              <li>Free-form text box on the Calling home page to ask anything about past conversations</li>
+            </ul>
+          </div>
+          <div class="ai-visual">
+            <img src="assets/ai/ask-anything.png" alt="Ask me anything — AI assistant prep">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-tier premium reveal">
+      <div class="ai-tier-header">
+        <div>
+          <span class="tier-badge premium">Add-On</span>
+          <h3>AI Premium</h3>
+          <p>Premium AI features that require the AI Premium license — available now and expanding in Q4FY26.</p>
+        </div>
+      </div>
+      <div class="ai-tier-cards">
+        <div class="ai-card reveal">
+          <div class="ai-text">
+            <div class="ai-badges">
+              <span class="badge delivered">Delivered — Limited Availability</span>
+            </div>
+            <h3>Share Summary on Transfer or Conference</h3>
+            <p class="tagline">Seamless information transfer — eliminating customer wait times</p>
+            <ul>
+              <li>When transferring or conferencing a call, share the summary with the new participant</li>
+              <li>Edit the summary before sharing for accuracy</li>
+              <li>New participant sees a short summary in the incoming call toast and a longer summary once they answer</li>
+            </ul>
+          </div>
+          <div class="ai-visual multi">
+            <img src="assets/ai/share-summary-1.png" alt="Share summary on transfer — call flow">
+            <img src="assets/ai/share-summary-2.png" alt="Share summary — notification">
+            <img src="assets/ai/share-summary-3.png" alt="Share summary — edit dialog">
+          </div>
+        </div>
+
+        <div class="ai-card reveal">
+          <div class="ai-text">
+            <div class="ai-badges">
+              <span class="badge upcoming">Q4FY26</span>
+            </div>
+            <h3>AI Generated Caller Intent</h3>
+            <p class="tagline">Deliver better, faster &amp; personalized support</p>
+            <ul>
+              <li>Displays a short summary of the caller's intent in the incoming call notification</li>
+              <li>Empowers employees with actionable context before answering — improving first-call resolution</li>
+              <li>Leverages enterprise data: AI Receptionist interactions, prior conversations, and transfer history</li>
+            </ul>
+          </div>
+          <div class="ai-visual multi">
+            <img src="assets/ai/caller-intent-1.png" alt="AI Generated Caller Intent — notification">
+            <img src="assets/ai/caller-intent-2.png" alt="Caller intent detail">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logos">
+    <img src="assets/siemer-logo.png" alt="Siemer Milling">
+  </div>
+  <p>Siemer Milling Company &bull; Webex Calling Migration &amp; AI Overview</p>
+  <p style="margin-top:8px;opacity:0.5;">Cisco Confidential &bull; &copy; 2026 Cisco and/or its affiliates. All rights reserved.</p>
+</footer>
+
+<script>
+(function () {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const timelineSection = document.getElementById('timeline');
+  const steps = document.querySelectorAll('.timeline-step');
+
+  function updateTimelineProgress() {
+    if (!timelineSection) return;
+    const rect = timelineSection.getBoundingClientRect();
+    const sectionHeight = timelineSection.offsetHeight;
+    const scrolled = -rect.top;
+    const progress = Math.max(0, Math.min(1, scrolled / (sectionHeight - window.innerHeight * 0.5)));
+    document.documentElement.style.setProperty('--progress', progress);
+  }
+
+  const stepObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      entry.target.classList.toggle('visible', entry.isIntersecting);
+      entry.target.classList.toggle('active', entry.isIntersecting);
+    });
+  }, { threshold: reducedMotion ? 0 : 0.4, rootMargin: '-10% 0px -10% 0px' });
+
+  steps.forEach(function (step) { stepObserver.observe(step); });
+
+  const revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        if (!reducedMotion) revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: reducedMotion ? 0 : 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal, .ai-card, .ai-tier').forEach(function (el, i) {
+    if (!reducedMotion) el.style.transitionDelay = (i % 3) * 0.08 + 's';
+    revealObserver.observe(el);
+  });
+
+  if (!reducedMotion) {
+    window.addEventListener('scroll', updateTimelineProgress, { passive: true });
+    updateTimelineProgress();
+  } else {
+    document.documentElement.style.setProperty('--progress', 1);
+    steps.forEach(function (s) { s.classList.add('visible', 'active'); });
+  }
+})();
+</script>
+</body>
+</html>
