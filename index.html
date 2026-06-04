@@ -377,6 +377,134 @@
 
   .tool-callout p { font-size: 0.9rem; color: var(--text-muted); }
 
+  .journey-section { background: var(--navy); }
+
+  .journey-track {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 0 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .journey-track.visible { opacity: 1; transform: translateY(0); }
+
+  .journey-track-line {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+    position: relative;
+  }
+
+  .journey-track-line::before,
+  .journey-track-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 28px;
+    height: 28px;
+    transform: translateY(-50%);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .journey-track-line::before { left: 0; }
+  .journey-track-line::after { right: 0; }
+
+  .journey-ready {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--green);
+    color: #001e3c;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 0 20px rgba(108,194,74,0.45);
+  }
+
+  .phase-block {
+    border-radius: 20px;
+    padding: 24px;
+    min-height: 100%;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .phase-block.visible { opacity: 1; transform: translateY(0); }
+
+  .phase-block.pre {
+    background: rgba(255,255,255,0.95);
+    color: #001e3c;
+  }
+
+  .phase-block.prep {
+    background: linear-gradient(180deg, #4da6ff 0%, #008cff 100%);
+    color: #fff;
+  }
+
+  .phase-block.migrate {
+    background: linear-gradient(180deg, #8fd96a 0%, var(--green) 100%);
+    color: #001e3c;
+  }
+
+  .phase-block-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 18px;
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+
+  .phase-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .phase-step-pill {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+  }
+
+  .phase-block.pre .phase-step-pill {
+    background: rgba(0,188,235,0.12);
+    color: #00395a;
+    border: 1px solid rgba(0,188,235,0.25);
+  }
+
+  .phase-block.prep .phase-step-pill {
+    background: rgba(255,255,255,0.95);
+    color: #00395a;
+  }
+
+  .phase-block.migrate .phase-step-pill {
+    background: rgba(255,255,255,0.22);
+    color: #001e3c;
+    border: 1px solid rgba(255,255,255,0.35);
+  }
+
+  .tool-callout .tool-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 10px;
+    color: var(--cyan);
+  }
+
   .value-section { background: var(--navy-light); }
 
   .value-grid {
@@ -575,6 +703,7 @@
     .ai-card { grid-template-columns: 1fr; }
     .ai-tier .ai-card:nth-child(even) { direction: ltr; }
     .ai-tier { padding: 24px 20px; }
+    .journey-ready { font-size: 10px; padding: 6px 10px; }
   }
 
   @media (max-width: 600px) {
@@ -667,6 +796,67 @@
           <h3>Finish on Your Timeline</h3>
           <p>No big-bang cutover. Move everyone else when the business is ready, including users and setups that need more time.</p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section journey-section" id="journey">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label cyan">Multi-Phase Approach</div>
+        <h2 class="section-title">Webex Calling Migration Journey</h2>
+      </div>
+      <p class="section-desc">Three phases to get from prep work to cutover, with the tools to support each stage.</p>
+    </div>
+
+    <div class="journey-track reveal">
+      <div class="journey-track-line">
+        <span class="journey-ready">Migration Ready</span>
+      </div>
+    </div>
+
+    <div class="phases-grid">
+      <div class="phase-block pre reveal">
+        <div class="phase-block-title">Pre-Migration</div>
+        <div class="phase-steps">
+          <span class="phase-step-pill">Webex Org Setup</span>
+          <span class="phase-step-pill">Analytics Deployment</span>
+          <span class="phase-step-pill">Webex Control Hub Setup</span>
+          <span class="phase-step-pill">Network and Security Readiness</span>
+          <span class="phase-step-pill">Applications Readiness (CUCM, Expressway and CUC)</span>
+        </div>
+      </div>
+
+      <div class="phase-block prep reveal">
+        <div class="phase-block-title">Migration Prep</div>
+        <div class="phase-steps">
+          <span class="phase-step-pill">Discover and Design</span>
+          <span class="phase-step-pill">Deploy and Configure (CUCM, Expressway and CUC)</span>
+          <span class="phase-step-pill">Plan and Prep</span>
+        </div>
+      </div>
+
+      <div class="phase-block migrate reveal">
+        <div class="phase-block-title">Migrate</div>
+        <div class="phase-steps">
+          <span class="phase-step-pill">Migrate users, devices, and numbers</span>
+          <span class="phase-step-pill">Decommission legacy systems</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools-row">
+      <div class="tool-callout reveal">
+        <svg class="tool-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="20" height="20" rx="3"/><path d="M9 9h4v4H9zM15 9h4v4h-4zM9 15h4v4H9zM15 15h2v2h-2z"/></svg>
+        <h4>Public APIs</h4>
+        <p>REST APIs to provision Webex Calling, with ongoing updates from Cisco.</p>
+      </div>
+      <div class="tool-callout reveal">
+        <svg class="tool-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6l2 16M18 6l-2 16M6 12h16M6 18h16"/></svg>
+        <h4>Basic Migration Tools</h4>
+        <p>Bulk provisioning and task-based tools in Control Hub for day-to-day migration work.</p>
       </div>
     </div>
   </div>
@@ -852,7 +1042,7 @@
     });
   }, { threshold: reducedMotion ? 0 : 0.15, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.reveal, .ai-card, .ai-tier').forEach(function (el, i) {
+  document.querySelectorAll('.reveal, .ai-card, .ai-tier, .phase-block, .journey-track').forEach(function (el, i) {
     if (!reducedMotion) el.style.transitionDelay = (i % 3) * 0.08 + 's';
     revealObserver.observe(el);
   });
